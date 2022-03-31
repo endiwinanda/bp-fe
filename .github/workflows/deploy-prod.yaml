@@ -1,0 +1,30 @@
+name: Deploy to Prod
+on:
+  workflow_dispatch:
+    inputs:
+        job:
+          description: 'Deploy production ?'
+          required: false
+jobs:
+  deployment_to_k8s_production:
+    name: deployment to k8s production
+    needs: [deployment_to_k8s_staging]
+    runs-on: ubuntu-latest
+    env: 
+      APPLICATION_NAME: frontend
+    steps:
+      - name: Cloning project
+        uses: actions/checkout@v2
+      - name: Set outputs
+        id: vars
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+      - name: Check outputs
+        run: echo ${{ steps.vars.outputs.sha_short }}
+      - name: change deployment.yaml image
+        run: sed -i "s/frontend:latest/frontend:${{ steps.vars.outputs.sha_short }}/g" kubernetes/production/deployment.yaml
+      - name: Trigger deploy
+        uses: Consensys/kubernetes-action@master
+        env:
+          KUBE_CONFIG_DATA: ${{ secrets.CONFIG_K8S }}
+        with:
+          args: apply -f kubernetes/production/deployment.yaml
