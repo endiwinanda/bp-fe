@@ -33,7 +33,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: frontend.aditia701.xyz
+  - host: frontend.endiwinanda.xyz
     http:
       paths: 
       - path: /
@@ -63,10 +63,10 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: aditiaipr/frontend:latest
+          image: endiwinanda/frontend
           env:
             - name: REACT_APP_BASE_URL
-              value: "https://backend.aditia701.xyz"
+              value: "https://backend.endiwinanda.xyz"
           ports:
             - containerPort: 3000
           resources:
